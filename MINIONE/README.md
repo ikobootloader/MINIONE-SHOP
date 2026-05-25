@@ -1,4 +1,4 @@
-# Mininione Shop - Vitrine Bohème Chic
+# Minione Shop - Vitrine Bohème Chic
 
 Page vitrine e-commerce convertie de React/JSX vers HTML/CSS/JS vanilla.
 
