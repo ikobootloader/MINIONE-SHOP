@@ -1,4 +1,3 @@
-// Fonction d'échappement HTML pour prévenir XSS
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
@@ -11,14 +10,12 @@ const summarySubtotalEl = document.getElementById('summarySubtotal');
 const summaryShippingEl = document.getElementById('summaryShipping');
 const summaryTotalEl = document.getElementById('summaryTotal');
 
-// Vérifier si le panier est vide
 const cartItems = window.cartUtils.getCart();
 if (cartItems.length === 0) {
   alert('Votre panier est vide');
   window.location.href = 'collection.html';
 }
 
-// Afficher les articles
 function renderOrderSummary() {
   const currentCart = window.cartUtils.getCart();
   const subtotal = window.cartUtils.getCartTotal();
@@ -30,7 +27,7 @@ function renderOrderSummary() {
       <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">
       <div class="order-item-details">
         <h4>${escapeHtml(item.name)}</h4>
-        <p>${escapeHtml(item.size)} • ${escapeHtml(item.color)} • Qté: ${parseInt(item.quantity, 10)}</p>
+        <p>${escapeHtml(item.size)} • ${escapeHtml(item.color)} • Qté : ${parseInt(item.quantity, 10)}</p>
       </div>
       <span class="order-item-price">${(parseFloat(item.price) * parseInt(item.quantity, 10)).toFixed(2).replace('.', ',')} €</span>
     </div>
@@ -41,7 +38,6 @@ function renderOrderSummary() {
   summaryTotalEl.textContent = `${total.toFixed(2).replace('.', ',')} €`;
 }
 
-// Soumettre la commande
 checkoutForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -56,9 +52,9 @@ checkoutForm.addEventListener('submit', async (e) => {
     total: window.cartUtils.getCartTotal() + (window.cartUtils.getCartTotal() >= 59 ? 0 : 5.90)
   };
 
+  const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+
   try {
-    // Désactiver le bouton
-    const submitBtn = checkoutForm.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.textContent = 'Traitement...';
 
@@ -68,19 +64,16 @@ checkoutForm.addEventListener('submit', async (e) => {
       body: JSON.stringify(formData)
     });
 
-    if (!response.ok) throw new Error('Erreur lors de la commande');
+    if (!response.ok) {
+      throw new Error('Erreur lors de la commande');
+    }
 
     const result = await response.json();
-
-    // Vider le panier
     window.cartUtils.clearCart();
-
-    // Rediriger vers la page de confirmation
     window.location.href = `confirmation.html?order=${result.orderId}`;
   } catch (error) {
     console.error('Erreur:', error);
     alert('Une erreur est survenue. Veuillez réessayer.');
-    const submitBtn = checkoutForm.querySelector('button[type="submit"]');
     submitBtn.disabled = false;
     submitBtn.textContent = 'Valider la commande';
   }

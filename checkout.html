@@ -53,7 +53,7 @@
             <div class="form-row">
               <div class="form-group full">
                 <label for="phone">Téléphone</label>
-                <input type="tel" id="phone">
+                <input type="tel" id="phone" inputmode="tel" autocomplete="tel">
               </div>
             </div>
           </div>
@@ -63,17 +63,17 @@
             <div class="form-row">
               <div class="form-group full">
                 <label for="address">Adresse *</label>
-                <input type="text" id="address" required>
+                <input type="text" id="address" required autocomplete="street-address">
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label for="city">Ville *</label>
-                <input type="text" id="city" required>
+                <input type="text" id="city" required autocomplete="address-level2">
               </div>
               <div class="form-group">
                 <label for="postal">Code postal *</label>
-                <input type="text" id="postal" required>
+                <input type="text" id="postal" required inputmode="numeric" autocomplete="postal-code">
               </div>
             </div>
           </div>

@@ -1,11 +1,9 @@
-// Fonction d'échappement HTML pour prévenir XSS
 function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
 }
 
-// Récupération des paramètres URL
 const urlParams = new URLSearchParams(window.location.search);
 let currentFilters = {
   category: urlParams.get('category') || '',
@@ -18,7 +16,6 @@ let currentFilters = {
   sort: urlParams.get('sort') || ''
 };
 
-// Éléments DOM
 const filtersSidebar = document.getElementById('filtersSidebar');
 const filterToggle = document.getElementById('filterToggle');
 const clearFiltersBtn = document.getElementById('clearFilters');
@@ -32,12 +29,25 @@ const applyPriceBtn = document.getElementById('applyPrice');
 const minPriceInput = document.getElementById('minPrice');
 const maxPriceInput = document.getElementById('maxPrice');
 
-// Toggle filters sur mobile
+function isMobileFiltersMode() {
+  return window.innerWidth < 768;
+}
+
+function closeFiltersSidebar() {
+  if (isMobileFiltersMode()) {
+    filtersSidebar?.classList.remove('open');
+  }
+}
+
+function applyFiltersAndReload() {
+  closeFiltersSidebar();
+  loadProducts();
+}
+
 filterToggle?.addEventListener('click', () => {
   filtersSidebar.classList.toggle('open');
 });
 
-// Charger les catégories
 async function loadCategories() {
   try {
     const response = await fetch('/api/categories');
@@ -47,13 +57,11 @@ async function loadCategories() {
       <label><input type="checkbox" name="category" value="${escapeHtml(cat)}" ${currentFilters.category === cat ? 'checked' : ''}> ${escapeHtml(cat)}</label>
     `).join('');
 
-    // Event listeners pour les catégories
     categoryFiltersContainer.querySelectorAll('input').forEach(input => {
       input.addEventListener('change', () => {
         if (input.checked) {
           currentFilters.category = input.value;
           loadSubcategories(input.value);
-          // Décocher les autres catégories
           categoryFiltersContainer.querySelectorAll('input').forEach(other => {
             if (other !== input) other.checked = false;
           });
@@ -62,11 +70,11 @@ async function loadCategories() {
           currentFilters.subcategory = '';
           subcategoryFiltersContainer.innerHTML = '';
         }
-        loadProducts();
+
+        applyFiltersAndReload();
       });
     });
 
-    // Charger les sous-catégories si une catégorie est déjà sélectionnée
     if (currentFilters.category) {
       loadSubcategories(currentFilters.category);
     }
@@ -75,80 +83,73 @@ async function loadCategories() {
   }
 }
 
-// Charger les sous-catégories
 async function loadSubcategories(category) {
   try {
     const response = await fetch(`/api/subcategories?category=${encodeURIComponent(category)}`);
     const subcategories = await response.json();
 
-    if (subcategories.length > 0) {
-      subcategoryFiltersContainer.innerHTML = subcategories.map(sub => `
-        <label><input type="checkbox" name="subcategory" value="${escapeHtml(sub)}" ${currentFilters.subcategory === sub ? 'checked' : ''}> ${escapeHtml(sub)}</label>
-      `).join('');
-
-      // Event listeners pour les sous-catégories
-      subcategoryFiltersContainer.querySelectorAll('input').forEach(input => {
-        input.addEventListener('change', () => {
-          if (input.checked) {
-            currentFilters.subcategory = input.value;
-            // Décocher les autres sous-catégories
-            subcategoryFiltersContainer.querySelectorAll('input').forEach(other => {
-              if (other !== input) other.checked = false;
-            });
-          } else {
-            currentFilters.subcategory = '';
-          }
-          loadProducts();
-        });
-      });
-    } else {
+    if (subcategories.length === 0) {
       subcategoryFiltersContainer.innerHTML = '<p style="color:#78716c;font-size:13px;">Aucune sous-catégorie</p>';
+      return;
     }
+
+    subcategoryFiltersContainer.innerHTML = subcategories.map(sub => `
+      <label><input type="checkbox" name="subcategory" value="${escapeHtml(sub)}" ${currentFilters.subcategory === sub ? 'checked' : ''}> ${escapeHtml(sub)}</label>
+    `).join('');
+
+    subcategoryFiltersContainer.querySelectorAll('input').forEach(input => {
+      input.addEventListener('change', () => {
+        if (input.checked) {
+          currentFilters.subcategory = input.value;
+          subcategoryFiltersContainer.querySelectorAll('input').forEach(other => {
+            if (other !== input) other.checked = false;
+          });
+        } else {
+          currentFilters.subcategory = '';
+        }
+
+        applyFiltersAndReload();
+      });
+    });
   } catch (error) {
     console.error('Erreur chargement sous-catégories:', error);
   }
 }
 
-// Event listeners pour les filtres de saison
 document.querySelectorAll('input[name="season"]').forEach(input => {
   input.addEventListener('change', () => {
     if (input.checked) {
       currentFilters.season = input.value;
-      // Décocher les autres saisons
       document.querySelectorAll('input[name="season"]').forEach(other => {
         if (other !== input) other.checked = false;
       });
     } else {
       currentFilters.season = '';
     }
-    loadProducts();
+
+    applyFiltersAndReload();
   });
 
-  // Pré-cocher si dans les filtres actuels
   if (input.value === currentFilters.season) {
     input.checked = true;
   }
 });
 
-// Event listener pour le tri
 sortSelect.value = currentFilters.sort;
 sortSelect.addEventListener('change', () => {
   currentFilters.sort = sortSelect.value;
   loadProducts();
 });
 
-// Event listener pour le prix
 applyPriceBtn?.addEventListener('click', () => {
   currentFilters.minPrice = minPriceInput.value;
   currentFilters.maxPrice = maxPriceInput.value;
-  loadProducts();
+  applyFiltersAndReload();
 });
 
-// Pré-remplir les champs de prix
 if (currentFilters.minPrice) minPriceInput.value = currentFilters.minPrice;
 if (currentFilters.maxPrice) maxPriceInput.value = currentFilters.maxPrice;
 
-// Réinitialiser les filtres
 clearFiltersBtn?.addEventListener('click', () => {
   currentFilters = {
     category: '',
@@ -161,23 +162,20 @@ clearFiltersBtn?.addEventListener('click', () => {
     sort: ''
   };
 
-  // Réinitialiser les inputs
-  document.querySelectorAll('input[type="checkbox"]').forEach(input => input.checked = false);
+  document.querySelectorAll('input[type="checkbox"]').forEach(input => {
+    input.checked = false;
+  });
   minPriceInput.value = '';
   maxPriceInput.value = '';
   sortSelect.value = '';
-
-  // Recharger
   subcategoryFiltersContainer.innerHTML = '';
-  loadProducts();
+  applyFiltersAndReload();
 });
 
-// Charger les produits
 async function loadProducts() {
   try {
     productsGrid.innerHTML = '<div class="loading">Chargement...</div>';
 
-    // Construire l'URL avec les filtres
     const params = new URLSearchParams();
     Object.keys(currentFilters).forEach(key => {
       if (currentFilters[key]) {
@@ -188,7 +186,6 @@ async function loadProducts() {
     const response = await fetch(`/api/products?${params.toString()}`);
     const products = await response.json();
 
-    // Mettre à jour le titre (textContent est sûr, pas d'innerHTML)
     if (currentFilters.category) {
       pageTitle.textContent = currentFilters.category;
     } else if (currentFilters.featured) {
@@ -199,12 +196,11 @@ async function loadProducts() {
       pageTitle.textContent = 'Collection';
     }
 
-    // Afficher le nombre de résultats
     resultsCount.textContent = `${products.length} produit${products.length > 1 ? 's' : ''}`;
 
-    // Afficher les produits
     if (products.length === 0) {
-      productsGrid.innerHTML = '<div class="no-results"><p>Aucun produit trouvé</p><button onclick="clearFiltersBtn.click()" class="btn-primary">Réinitialiser les filtres</button></div>';
+      productsGrid.innerHTML = '<div class="no-results"><p>Aucun produit trouvé</p><button type="button" id="emptyStateReset" class="btn-primary">Réinitialiser les filtres</button></div>';
+      document.getElementById('emptyStateReset')?.addEventListener('click', () => clearFiltersBtn?.click());
       return;
     }
 
@@ -227,6 +223,5 @@ async function loadProducts() {
   }
 }
 
-// Initialisation
 loadCategories();
 loadProducts();
