@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Mininione Shop</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="admin-body">
+  <header class="admin-header">
+    <div class="admin-header-content">
+      <h1>Administration Mininione</h1>
+      <a href="index.html" class="btn-text">← Retour au site</a>
+    </div>
+  </header>
+
+  <main class="admin-page">
+    <nav class="admin-nav">
+      <button class="admin-nav-btn active" data-tab="products">Produits</button>
+      <button class="admin-nav-btn" data-tab="orders">Commandes</button>
+    </nav>
+
+    <div class="admin-content">
+      <div id="productsTab" class="admin-tab active">
+        <div class="admin-toolbar">
+          <h2>Gestion des produits</h2>
+          <button id="addProductBtn" class="btn-primary">+ Ajouter un produit</button>
+        </div>
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Produit</th>
+                <th>Catégorie</th>
+                <th>Prix</th>
+                <th>Stock</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody">
+              <tr><td colspan="6">Chargement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="ordersTab" class="admin-tab">
+        <h2>Commandes</h2>
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Client</th>
+                <th>Email</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <tr><td colspan="6">Chargement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="productModal" class="modal">
+    <div class="modal-content modal-large">
+      <button class="modal-close" id="productModalClose">&times;</button>
+      <h2 id="productModalTitle">Ajouter un produit</h2>
+      <form id="productForm" class="admin-form">
+        <input type="hidden" id="productId">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productName">Nom *</label>
+            <input type="text" id="productName" required>
+          </div>
+          <div class="form-group">
+            <label for="productPrice">Prix (€) *</label>
+            <input type="number" id="productPrice" step="0.01" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full">
+            <label for="productDescription">Description</label>
+            <textarea id="productDescription" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productCategory">Catégorie *</label>
+            <input type="text" id="productCategory" required>
+          </div>
+          <div class="form-group">
+            <label for="productSubcategory">Sous-catégorie</label>
+            <input type="text" id="productSubcategory">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productSeason">Saison *</label>
+            <select id="productSeason" required>
+              <option value="Été">Été</option>
+              <option value="Hiver">Hiver</option>
+              <option value="Printemps">Printemps</option>
+              <option value="Automne">Automne</option>
+              <option value="Toutes saisons">Toutes saisons</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="productMaterial">Matière</label>
+            <input type="text" id="productMaterial">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productSizes">Tailles (séparées par virgule) *</label>
+            <input type="text" id="productSizes" placeholder="XS,S,M,L,XL" required>
+          </div>
+          <div class="form-group">
+            <label for="productColors">Couleurs (séparées par virgule) *</label>
+            <input type="text" id="productColors" placeholder="Noir,Blanc,Beige" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productImage">Image (chemin) *</label>
+            <input type="text" id="productImage" placeholder="PHOTOS/image.avif" required>
+          </div>
+          <div class="form-group">
+            <label for="productBadge">Badge</label>
+            <input type="text" id="productBadge" placeholder="Nouveauté, Best-seller...">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="productStock">Stock</label>
+            <input type="number" id="productStock" value="100">
+          </div>
+          <div class="form-group">
+            <label for="productFeatured">
+              <input type="checkbox" id="productFeatured">
+              Produit vedette
+            </label>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-outline" onclick="document.getElementById('productModal').style.display='none'">Annuler</button>
+          <button type="submit" class="btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="data/products-data.js"></script>
+  <script src="js/mock-api.js"></script>
+  <script src="js/demo-notice.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

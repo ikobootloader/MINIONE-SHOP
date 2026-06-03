@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commande confirmée - Mininione Shop</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <a href="index.html" class="logo">
+        <div class="logo-main">Mininione</div>
+        <div class="logo-sub">shop</div>
+      </a>
+    </div>
+  </header>
+
+  <main class="confirmation-page">
+    <div class="confirmation-container">
+      <div class="success-icon">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h1>Commande confirmée !</h1>
+      <p class="confirmation-message">
+        Merci pour votre commande. Un email de confirmation vous a été envoyé.<br>
+        Numéro de commande : <strong id="orderNumber">#---</strong>
+      </p>
+      <div class="confirmation-actions">
+        <a href="index.html" class="btn-primary">Retour à l'accueil</a>
+        <a href="collection.html" class="btn-outline">Continuer mes achats</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <a href="index.html" class="logo">
+      <div class="logo-main">Mininione</div>
+      <div class="logo-sub">shop</div>
+    </a>
+    <p class="footer-tagline">Bohème • Chic • Féminin</p>
+  </footer>
+
+  <script src="data/products-data.js"></script>
+  <script src="js/mock-api.js"></script>
+  <script src="js/demo-notice.js"></script>
+  <script>
+    async function loadConfirmation() {
+      const orderId = new URLSearchParams(window.location.search).get('order');
+      if (!orderId) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/orders/${orderId}`);
+        if (!response.ok) {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        document.getElementById('orderNumber').textContent = `#${orderId}`;
+      } catch (error) {
+        window.location.href = 'index.html';
+      }
+    }
+
+    loadConfirmation();
+  </script>
+</body>
+</html>

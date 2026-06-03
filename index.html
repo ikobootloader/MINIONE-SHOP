@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mininione Shop - Bohème Chic</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <div class="banner">
@@ -13,32 +13,42 @@
 
   <header class="header">
     <div class="header-content">
-      <button class="menu-toggle" id="menuToggle">
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <nav class="nav-desktop">
-        <a href="#">Collection</a>
-        <a href="#">Nouveautés</a>
-        <a href="#">Robes</a>
-        <a href="#">Lookbook</a>
+        <a href="collection.html">Collection</a>
+        <a href="collection.html?featured=1">Nouveautés</a>
+        <a href="collection.html?category=Robes">Robes</a>
+        <a href="#lookbook">Lookbook</a>
       </nav>
-      <div class="logo">
+      <a href="index.html" class="logo">
         <div class="logo-main">Mininione</div>
         <div class="logo-sub">shop</div>
-      </div>
+      </a>
       <div class="header-icons">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <button id="searchBtn" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+        <button id="wishlistBtn" aria-label="Favoris" class="wishlist-link"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span id="wishlistCount" class="cart-count">0</span></button>
+        <a href="cart.html" id="cartBtn" aria-label="Panier" class="cart-link"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span id="cartCount" class="cart-count">0</span></a>
       </div>
     </div>
     <nav class="nav-mobile" id="navMobile">
-      <a href="#">Collection</a>
-      <a href="#">Nouveautés</a>
-      <a href="#">Robes</a>
-      <a href="#">Lookbook</a>
+      <a href="collection.html">Collection</a>
+      <a href="collection.html?featured=1">Nouveautés</a>
+      <a href="collection.html?category=Robes">Robes</a>
+      <a href="#lookbook">Lookbook</a>
     </nav>
   </header>
+
+  <div id="searchModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="searchClose">&times;</button>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Rechercher un produit...">
+        <button id="searchSubmit">Rechercher</button>
+      </div>
+    </div>
+  </div>
 
   <section class="hero">
     <div class="hero-grid">
@@ -47,7 +57,7 @@
           <p class="hero-subtitle">Bohème l'été • Classic chic l'hiver</p>
           <h1 class="hero-title">Une mode douce, féminine et facile à porter.</h1>
           <p class="hero-description">Des pièces fraîches, élégantes et tendance pour composer un vestiaire bohème-chic du quotidien.</p>
-          <button class="btn-primary">Découvrir la collection</button>
+          <a href="collection.html"><button class="btn-primary">Découvrir la collection</button></a>
         </div>
       </div>
       <div class="hero-image">
@@ -58,7 +68,7 @@
   </section>
 
   <section class="categories">
-    <div class="category-card">
+    <div class="category-card" data-link="collection.html?season=%C3%89t%C3%A9">
       <img src="PHOTOS/photo-1503342217505-b0a15ec3261c.avif" alt="Bohème l'été">
       <div class="category-overlay"></div>
       <div class="category-content">
@@ -67,7 +77,7 @@
         <button class="btn-outline-white">Voir</button>
       </div>
     </div>
-    <div class="category-card">
+    <div class="category-card" data-link="collection.html?season=Hiver">
       <img src="PHOTOS/photo-1515886657613-9f3515b0c78f.avif" alt="Chic l'hiver">
       <div class="category-overlay"></div>
       <div class="category-content">
@@ -76,7 +86,7 @@
         <button class="btn-outline-white">Voir</button>
       </div>
     </div>
-    <div class="category-card">
+    <div class="category-card" data-link="collection.html">
       <img src="PHOTOS/photo-1483985988355-763728e1935b.avif" alt="Les essentiels">
       <div class="category-overlay"></div>
       <div class="category-content">
@@ -93,64 +103,21 @@
         <p class="section-subtitle">Sélection Mininione</p>
         <h2 class="section-title">Nouveautés</h2>
       </div>
-      <a href="#" class="link-underline">Tout voir</a>
+      <a href="collection.html?featured=1" class="link-underline">Tout voir</a>
     </div>
-    <div class="products-grid">
-      <article class="product-card">
-        <div class="product-image">
-          <img src="PHOTOS/photo-1529139574466-a303027c1d8b.avif" alt="Robe fluide Azélie">
-          <span class="product-badge">Nouveauté</span>
-          <button class="product-quick-view">Aperçu rapide</button>
-        </div>
-        <div class="product-info">
-          <h3>Robe fluide Azélie</h3>
-          <span>49,90 €</span>
-        </div>
-      </article>
-      <article class="product-card">
-        <div class="product-image">
-          <img src="PHOTOS/photo-1496747611176-843222e1e57c.avif" alt="Blouse bohème Écru">
-          <span class="product-badge">Best-seller</span>
-          <button class="product-quick-view">Aperçu rapide</button>
-        </div>
-        <div class="product-info">
-          <h3>Blouse bohème Écru</h3>
-          <span>34,90 €</span>
-        </div>
-      </article>
-      <article class="product-card">
-        <div class="product-image">
-          <img src="PHOTOS/photo-1539109136881-3be0616acf4b.avif" alt="Ensemble lin Sienna">
-          <span class="product-badge">Été</span>
-          <button class="product-quick-view">Aperçu rapide</button>
-        </div>
-        <div class="product-info">
-          <h3>Ensemble lin Sienna</h3>
-          <span>59,90 €</span>
-        </div>
-      </article>
-      <article class="product-card">
-        <div class="product-image">
-          <img src="PHOTOS/photo-1509631179647-0177331693ae.avif" alt="Manteau chic Noisette">
-          <span class="product-badge">Chic hiver</span>
-          <button class="product-quick-view">Aperçu rapide</button>
-        </div>
-        <div class="product-info">
-          <h3>Manteau chic Noisette</h3>
-          <span>79,90 €</span>
-        </div>
-      </article>
+    <div class="products-grid" id="featuredProducts">
+      <div class="loading">Chargement...</div>
     </div>
   </section>
 
-  <section class="lookbook">
+  <section class="lookbook" id="lookbook">
     <div class="lookbook-grid">
       <img src="PHOTOS/photo-1558769132-cb1aea458c5e.avif" alt="Lookbook">
       <div class="lookbook-content">
         <p class="section-subtitle">Lookbook</p>
         <h2>Le style Mininione : naturel, féminin, évident.</h2>
         <p>Une direction visuelle inspirée du thème Broadcast : grands visuels, sections modulaires, mise en avant rapide des produits, navigation claire et expérience mobile-first.</p>
-        <button class="btn-outline">Explorer les looks</button>
+        <a href="collection.html"><button class="btn-outline">Explorer les looks</button></a>
       </div>
     </div>
   </section>
@@ -175,13 +142,68 @@
   </section>
 
   <footer class="footer">
-    <div class="logo">
+    <a href="index.html" class="logo">
       <div class="logo-main">Mininione</div>
       <div class="logo-sub">shop</div>
-    </div>
+    </a>
     <p class="footer-tagline">Bohème • Chic • Féminin</p>
+    <div class="footer-admin">
+      <a href="admin.html" style="color: #78716c; font-size: 11px; text-decoration: none;">Admin</a>
+    </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="data/products-data.js"></script>
+  <script src="js/mock-api.js"></script>
+  <script src="js/demo-notice.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text ?? '';
+      return div.innerHTML;
+    }
+
+    function escapeAttribute(text) {
+      return escapeHtml(text).replace(/"/g, '&quot;');
+    }
+
+    async function loadFeaturedProducts() {
+      try {
+        const response = await fetch('/api/products?featured=1');
+        const products = await response.json();
+        const container = document.getElementById('featuredProducts');
+
+        if (products.length === 0) {
+          container.innerHTML = '<p style="text-align:center;color:#78716c;">Aucun produit vedette</p>';
+          return;
+        }
+
+        container.innerHTML = products.slice(0, 4).map(product => `
+          <article class="product-card" onclick="window.location.href='product.html?id=${product.id}'">
+            <div class="product-image">
+              <img src="${escapeAttribute(product.image)}" alt="${escapeAttribute(product.name)}">
+              ${product.badge ? `<span class="product-badge">${escapeHtml(product.badge)}</span>` : ''}
+              <button class="product-quick-view" onclick="event.stopPropagation(); window.location.href='product.html?id=${product.id}'">Aperçu rapide</button>
+            </div>
+            <div class="product-info">
+              <h3>${escapeHtml(product.name)}</h3>
+              <span>${product.price.toFixed(2).replace('.', ',')} €</span>
+            </div>
+          </article>
+        `).join('');
+      } catch (error) {
+        document.getElementById('featuredProducts').innerHTML = '<p style="text-align:center;color:red;">Erreur de chargement</p>';
+      }
+    }
+
+    loadFeaturedProducts();
+
+    document.querySelectorAll('.category-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const link = card.dataset.link;
+        if (link) window.location.href = link;
+      });
+    });
+  </script>
 </body>
 </html>
