@@ -10,6 +10,55 @@ const searchClose = document.getElementById('searchClose');
 const searchInput = document.getElementById('searchInput');
 const searchSubmit = document.getElementById('searchSubmit');
 const wishlistBtn = document.getElementById('wishlistBtn');
+const navDesktop = document.querySelector('.nav-desktop');
+const headerIcons = document.querySelector('.header-icons');
+
+function ensureNavLink(container) {
+  if (!container || container.querySelector('[data-account-link="true"]')) {
+    return;
+  }
+
+  const accountLink = document.createElement('a');
+  accountLink.href = 'account.html';
+  accountLink.textContent = 'Compte';
+  accountLink.dataset.accountLink = 'true';
+  container.appendChild(accountLink);
+}
+
+function ensureHeaderAccountLink() {
+  if (!headerIcons || document.getElementById('accountBtn')) {
+    return;
+  }
+
+  const accountLink = document.createElement('a');
+  accountLink.href = 'account.html';
+  accountLink.id = 'accountBtn';
+  accountLink.className = 'account-link';
+  accountLink.setAttribute('aria-label', 'Compte');
+  accountLink.innerHTML = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M20 21a8 8 0 0 0-16 0"></path>
+      <circle cx="12" cy="7" r="4"></circle>
+    </svg>
+    <span id="loyaltyBadge" class="loyalty-badge">0</span>
+  `;
+
+  const cartLink = document.getElementById('cartBtn');
+  if (cartLink) {
+    headerIcons.insertBefore(accountLink, cartLink);
+  } else {
+    headerIcons.appendChild(accountLink);
+  }
+}
+
+function updateLoyaltyBadgeDisplay(points) {
+  const badge = document.getElementById('loyaltyBadge');
+  if (!badge) return;
+
+  const value = Number(points) || 0;
+  badge.textContent = value > 999 ? '999+' : String(value);
+  badge.style.display = value > 0 ? 'flex' : 'none';
+}
 
 function closeMobileNav() {
   navMobile?.classList.remove('open');
@@ -30,6 +79,10 @@ if (menuToggle && navMobile) {
     link.addEventListener('click', closeMobileNav);
   });
 }
+
+ensureNavLink(navDesktop);
+ensureNavLink(navMobile);
+ensureHeaderAccountLink();
 
 if (searchBtn && searchModal) {
   searchBtn.addEventListener('click', () => {
@@ -212,6 +265,18 @@ function showNotification(message, type = 'success') {
   }, 3000);
 }
 
+async function refreshAccountUI() {
+  try {
+    const response = await fetch('/api/account');
+    if (!response.ok) return;
+
+    const data = await response.json();
+    updateLoyaltyBadgeDisplay(data?.stats?.available_points || 0);
+  } catch (error) {
+    updateLoyaltyBadgeDisplay(0);
+  }
+}
+
 if (wishlistBtn) {
   wishlistBtn.addEventListener('click', () => {
     window.location.href = 'wishlist.html';
@@ -220,6 +285,7 @@ if (wishlistBtn) {
 
 updateCartCount();
 updateWishlistCount();
+refreshAccountUI();
 
 window.cartUtils = {
   addToCart,
@@ -241,3 +307,6 @@ window.wishlistUtils = {
 };
 
 window.showNotification = showNotification;
+window.accountUtils = {
+  refreshAccountUI
+};

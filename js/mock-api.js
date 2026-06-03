@@ -1,6 +1,7 @@
 (function () {
   const PRODUCTS_KEY = "mininione_demo_products";
   const ORDERS_KEY = "mininione_demo_orders";
+  const ACCOUNT_KEY = "mininione_demo_account";
 
   function safeJsonParse(value, fallback) {
     try {
@@ -62,6 +63,111 @@
 
   function saveOrders(orders) {
     localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+  }
+
+  function getTier(points) {
+    if (points >= 350) {
+      return { name: "Icône", min: 350, next: null };
+    }
+
+    if (points >= 150) {
+      return { name: "Muse", min: 150, next: 350 };
+    }
+
+    return { name: "Atelier", min: 0, next: 150 };
+  }
+
+  function buildEmptyAccount() {
+    return {
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+      address: "",
+      city: "",
+      postal: "",
+      loyalty_points: 0,
+      lifetime_points: 0,
+      order_count: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  function normalizeAccount(account) {
+    const base = buildEmptyAccount();
+    const normalized = {
+      ...base,
+      ...(account || {})
+    };
+
+    normalized.loyalty_points = Number(normalized.loyalty_points) || 0;
+    normalized.lifetime_points = Number(normalized.lifetime_points) || 0;
+    normalized.order_count = Number(normalized.order_count) || 0;
+    normalized.updated_at = normalized.updated_at || new Date().toISOString();
+    normalized.created_at = normalized.created_at || normalized.updated_at;
+
+    return normalized;
+  }
+
+  function loadAccount() {
+    return normalizeAccount(safeJsonParse(localStorage.getItem(ACCOUNT_KEY), null));
+  }
+
+  function saveAccount(account) {
+    localStorage.setItem(ACCOUNT_KEY, JSON.stringify(normalizeAccount(account)));
+  }
+
+  function splitCustomerName(fullName) {
+    const parts = String(fullName || "").trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) {
+      return { firstName: "", lastName: "" };
+    }
+
+    if (parts.length === 1) {
+      return { firstName: parts[0], lastName: "" };
+    }
+
+    return {
+      firstName: parts[0],
+      lastName: parts.slice(1).join(" ")
+    };
+  }
+
+  function summarizeOrder(order) {
+    const items = safeJsonParse(order.items, []);
+    const itemCount = items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+
+    return {
+      id: Number(order.id),
+      total: Number(order.total) || 0,
+      status: order.status || "pending",
+      created_at: order.created_at,
+      loyalty_points_earned: Number(order.loyalty_points_earned) || 0,
+      item_count: itemCount
+    };
+  }
+
+  function buildAccountPayload(account, orders) {
+    const normalizedAccount = normalizeAccount(account);
+    const tier = getTier(normalizedAccount.loyalty_points);
+    const recentOrders = [...orders]
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 6)
+      .map(summarizeOrder);
+
+    return {
+      profile: normalizedAccount,
+      stats: {
+        available_points: normalizedAccount.loyalty_points,
+        lifetime_points: normalizedAccount.lifetime_points,
+        order_count: normalizedAccount.order_count,
+        tier: tier.name,
+        next_tier: tier.next ? getTier(tier.next).name : null,
+        points_to_next_tier: tier.next ? Math.max(tier.next - normalizedAccount.loyalty_points, 0) : 0
+      },
+      orders: recentOrders
+    };
   }
 
   function nextId(items) {
@@ -174,11 +280,21 @@
     return Number((subtotal + shipping).toFixed(2));
   }
 
+  function calculateOrderSubtotal(items) {
+    return Number(items.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2));
+  }
+
+  function calculateLoyaltyPoints(subtotal) {
+    return Math.max(Math.floor(Number(subtotal) || 0), 0);
+  }
+
   function buildOrder(body, products) {
     const orders = loadOrders();
     const id = nextId(orders);
     const normalizedItems = normalizeOrderItems(body.items, products);
+    const subtotal = calculateOrderSubtotal(normalizedItems);
     const total = calculateOrderTotal(normalizedItems);
+    const loyaltyPointsEarned = calculateLoyaltyPoints(subtotal);
 
     return {
       id,
@@ -190,9 +306,33 @@
       shipping_postal: body.shipping_postal,
       items: JSON.stringify(normalizedItems),
       total,
+      subtotal,
+      loyalty_points_earned: loyaltyPointsEarned,
       status: "pending",
       created_at: new Date().toISOString()
     };
+  }
+
+  function updateAccountFromOrder(order) {
+    const currentAccount = loadAccount();
+    const { firstName, lastName } = splitCustomerName(order.customer_name);
+    const updatedAccount = normalizeAccount({
+      ...currentAccount,
+      first_name: firstName || currentAccount.first_name,
+      last_name: lastName || currentAccount.last_name,
+      email: order.customer_email || currentAccount.email,
+      phone: order.customer_phone || currentAccount.phone,
+      address: order.shipping_address || currentAccount.address,
+      city: order.shipping_city || currentAccount.city,
+      postal: order.shipping_postal || currentAccount.postal,
+      loyalty_points: currentAccount.loyalty_points + (Number(order.loyalty_points_earned) || 0),
+      lifetime_points: currentAccount.lifetime_points + (Number(order.loyalty_points_earned) || 0),
+      order_count: currentAccount.order_count + 1,
+      updated_at: new Date().toISOString()
+    });
+
+    saveAccount(updatedAccount);
+    return updatedAccount;
   }
 
   async function handleApiRequest(input, init) {
@@ -241,7 +381,36 @@
       const order = buildOrder(body, products);
       orders.push(order);
       saveOrders(orders);
-      return jsonResponse({ success: true, orderId: order.id });
+      const account = updateAccountFromOrder(order);
+      return jsonResponse({
+        success: true,
+        orderId: order.id,
+        loyaltyPointsEarned: Number(order.loyalty_points_earned) || 0,
+        loyaltyPointsBalance: Number(account.loyalty_points) || 0
+      });
+    }
+
+    if (pathname === "/api/account" && method === "GET") {
+      return jsonResponse(buildAccountPayload(loadAccount(), loadOrders()));
+    }
+
+    if (pathname === "/api/account" && method === "PUT") {
+      const body = safeJsonParse(init?.body || "{}", {});
+      const currentAccount = loadAccount();
+      const updatedAccount = normalizeAccount({
+        ...currentAccount,
+        first_name: body.first_name ?? currentAccount.first_name,
+        last_name: body.last_name ?? currentAccount.last_name,
+        email: body.email ?? currentAccount.email,
+        phone: body.phone ?? currentAccount.phone,
+        address: body.address ?? currentAccount.address,
+        city: body.city ?? currentAccount.city,
+        postal: body.postal ?? currentAccount.postal,
+        updated_at: new Date().toISOString()
+      });
+
+      saveAccount(updatedAccount);
+      return jsonResponse(buildAccountPayload(updatedAccount, loadOrders()));
     }
 
     if (pathname === "/api/admin/products" && method === "POST") {
@@ -303,6 +472,7 @@
     reset() {
       localStorage.removeItem(PRODUCTS_KEY);
       localStorage.removeItem(ORDERS_KEY);
+      localStorage.removeItem(ACCOUNT_KEY);
       loadProducts();
     }
   };

@@ -29,8 +29,12 @@
         Merci pour votre commande. Un email de confirmation vous a été envoyé.<br>
         Numéro de commande : <strong id="orderNumber">#---</strong>
       </p>
+      <p class="confirmation-loyalty" id="loyaltyMessage" hidden>
+        Votre cagnotte fidélité a bien été mise à jour.
+      </p>
       <div class="confirmation-actions">
         <a href="index.html" class="btn-primary">Retour à l'accueil</a>
+        <a href="account.html" class="btn-outline">Voir mon compte</a>
         <a href="collection.html" class="btn-outline">Continuer mes achats</a>
       </div>
     </div>
@@ -62,7 +66,15 @@
           return;
         }
 
+        const order = await response.json();
         document.getElementById('orderNumber').textContent = `#${orderId}`;
+
+        const loyaltyMessage = document.getElementById('loyaltyMessage');
+        const earnedPoints = Number(order.loyalty_points_earned) || 0;
+        if (earnedPoints > 0) {
+          loyaltyMessage.hidden = false;
+          loyaltyMessage.innerHTML = `Vous avez gagné <strong>${earnedPoints} points fidélité</strong> avec cette commande.`;
+        }
       } catch (error) {
         window.location.href = 'index.html';
       }

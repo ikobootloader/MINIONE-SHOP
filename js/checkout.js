@@ -38,6 +38,26 @@ function renderOrderSummary() {
   summaryTotalEl.textContent = `${total.toFixed(2).replace('.', ',')} €`;
 }
 
+async function prefillAccountDetails() {
+  try {
+    const response = await fetch('/api/account');
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const profile = data.profile || {};
+
+    if (profile.email) document.getElementById('email').value = profile.email;
+    if (profile.first_name) document.getElementById('firstName').value = profile.first_name;
+    if (profile.last_name) document.getElementById('lastName').value = profile.last_name;
+    if (profile.phone) document.getElementById('phone').value = profile.phone;
+    if (profile.address) document.getElementById('address').value = profile.address;
+    if (profile.city) document.getElementById('city').value = profile.city;
+    if (profile.postal) document.getElementById('postal').value = profile.postal;
+  } catch (error) {
+    // Le checkout reste utilisable même sans profil enregistré.
+  }
+}
+
 checkoutForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -70,6 +90,7 @@ checkoutForm.addEventListener('submit', async (e) => {
 
     const result = await response.json();
     window.cartUtils.clearCart();
+    window.accountUtils?.refreshAccountUI();
     window.location.href = `confirmation.html?order=${result.orderId}`;
   } catch (error) {
     console.error('Erreur:', error);
@@ -80,3 +101,4 @@ checkoutForm.addEventListener('submit', async (e) => {
 });
 
 renderOrderSummary();
+prefillAccountDetails();

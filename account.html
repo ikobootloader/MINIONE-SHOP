@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon compte - Mininione Shop</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="banner">
+    Programme fidélité Mininione • Gagnez des points à chaque commande
+  </div>
+
+  <header class="header">
+    <div class="header-content">
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <nav class="nav-desktop">
+        <a href="collection.html">Collection</a>
+        <a href="collection.html?featured=1">Nouveautés</a>
+        <a href="collection.html?category=Robes">Robes</a>
+        <a href="index.html#lookbook">Lookbook</a>
+      </nav>
+      <a href="index.html" class="logo">
+        <div class="logo-main">Mininione</div>
+        <div class="logo-sub">shop</div>
+      </a>
+      <div class="header-icons">
+        <button id="searchBtn" aria-label="Rechercher"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button>
+        <button id="wishlistBtn" aria-label="Favoris" class="wishlist-link"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span id="wishlistCount" class="cart-count">0</span></button>
+        <a href="cart.html" id="cartBtn" aria-label="Panier" class="cart-link"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><span id="cartCount" class="cart-count">0</span></a>
+      </div>
+    </div>
+    <nav class="nav-mobile" id="navMobile">
+      <a href="collection.html">Collection</a>
+      <a href="collection.html?featured=1">Nouveautés</a>
+      <a href="collection.html?category=Robes">Robes</a>
+      <a href="index.html#lookbook">Lookbook</a>
+    </nav>
+  </header>
+
+  <div id="searchModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="searchClose">&times;</button>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Rechercher un produit...">
+        <button id="searchSubmit">Rechercher</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="account-page">
+    <section class="account-header">
+      <span class="account-kicker">Compte client</span>
+      <h1>Mon compte et ma fidélité</h1>
+      <p>Retrouvez vos coordonnées, vos dernières commandes simulées et votre cagnotte fidélité. Dans cette démo, les points sont crédités automatiquement après chaque commande validée.</p>
+    </section>
+
+    <div class="account-layout">
+      <section class="account-column">
+        <article class="account-card account-loyalty-card" id="loyaltyCard">
+          <div class="loading">Chargement du programme fidélité...</div>
+        </article>
+
+        <article class="account-card">
+          <div class="account-section-title">
+            <div>
+              <h2>Historique récent</h2>
+              <p>Vos six dernières commandes de démonstration apparaissent ici.</p>
+            </div>
+          </div>
+          <div class="account-orders" id="accountOrders">
+            <div class="loading">Chargement des commandes...</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="account-column">
+        <article class="account-card">
+          <div class="account-section-title">
+            <div>
+              <h2>Informations personnelles</h2>
+              <p>Ces données sont stockées localement pour fluidifier la démo et pré-remplir le checkout.</p>
+            </div>
+          </div>
+          <form id="accountForm" class="account-profile-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstName">Prénom</label>
+                <input type="text" id="firstName" autocomplete="given-name">
+              </div>
+              <div class="form-group">
+                <label for="lastName">Nom</label>
+                <input type="text" id="lastName" autocomplete="family-name">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" autocomplete="email">
+              </div>
+              <div class="form-group">
+                <label for="phone">Téléphone</label>
+                <input type="tel" id="phone" autocomplete="tel">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group full">
+                <label for="address">Adresse</label>
+                <input type="text" id="address" autocomplete="street-address">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="city">Ville</label>
+                <input type="text" id="city" autocomplete="address-level2">
+              </div>
+              <div class="form-group">
+                <label for="postal">Code postal</label>
+                <input type="text" id="postal" inputmode="numeric" autocomplete="postal-code">
+              </div>
+            </div>
+            <div class="form-actions">
+              <a href="collection.html" class="btn-outline">Retour à la collection</a>
+              <button type="submit" class="btn-primary">Enregistrer mon profil</button>
+            </div>
+          </form>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <a href="index.html" class="logo">
+      <div class="logo-main">Mininione</div>
+      <div class="logo-sub">shop</div>
+    </a>
+    <p class="footer-tagline">Bohème • Chic • Féminin</p>
+  </footer>
+
+  <script src="data/products-data.js"></script>
+  <script src="js/mock-api.js"></script>
+  <script src="js/demo-notice.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/account.js"></script>
+</body>
+</html>
